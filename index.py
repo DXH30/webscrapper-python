@@ -49,8 +49,10 @@ def analyze():
     meta=soup.find("meta", attrs={"name": "description"})
     meta_description = meta["content"] if (meta) else "Nothing" 
     page_title=soup.title.text
-    keywords_on_page=dict(Counter(soup.get_text().split()))
-    missing_image_alt_text='abc'
+    keywords=dict(Counter(soup.get_text().split()))
+    sorted_keywords = sorted(keywords.items(), key=lambda x:x[1], reverse=True)
+    keywords_on_page=len(sorted_keywords)
+    missing_image_alt_text=len(soup.find_all('img', alt=False))
     number_of_internal_links=len(set(soup.find_all("a", href=lambda href: href and url in href and not href.startswith('#'))))
     number_of_external_links=len(set(soup.find_all("a", href=lambda href: href and url not in href and not href.startswith('#'))))
     number_of_broken_links="Loading..."
@@ -63,7 +65,8 @@ def analyze():
         "missing_image_alt_text": missing_image_alt_text,
         "number_of_internal_links": number_of_internal_links,
         "number_of_external_links": number_of_external_links,
-        "number_of_broken_links": number_of_broken_links
+        "number_of_broken_links": number_of_broken_links,
+        "sitemap": sitemap
     }, type="status")
 
     return result.render(
@@ -84,7 +87,7 @@ def get_broken_links():
     site_url = request.args.get('site_url')
     url = re.compile(r"https?://(www\.)?")
     url = url.sub('', site_url).strip().strip('/')
-    site_url = 'http://' + url
+    site_url = 'https://' + url
     response = requests.get(site_url)
     html = response.text
     soup = BeautifulSoup(html, "html.parser")
@@ -101,8 +104,8 @@ def get_broken_links():
             broken_links.append(link["href"])
             print("URL: "+link['href']+"Status Code : "+str(lr.status_code))
             pass
-        sse.publish({"message": "Loading", "status": str(len(broken_links))+" out of "+str(len(links))}, type="progress")
-    sse.publish({"message": "Complete", "status": str(len(broken_links))+" out of "+str(len(links))}, type="progress")
+        sse.publish({"message": "Loading", "status": "scanning "+str(len(broken_links))+" out of "+str(len(links))}, type="progress")
+    sse.publish({"message": "Complete", "status": str(len(broken_links))+" out of "+str(len(links))+" is broken"}, type="progress")
     return broken_links
 
 @app.route('/getsitemap')
@@ -115,13 +118,19 @@ def get_sitemap():
     html = response.text
     soup = BeautifulSoup(html, "html.parser")
     sitemap_exists = 0
+    sitemap_url = urljoin(site_url, 'sitemap.xml')
+    sitemap_response = requests.get(sitemap_url)
+    print(sitemap_url)
+    print(sitemap_response)
     try:
         sitemap_url = urljoin(site_url, 'sitemap.xml')
         sitemap_response = requests.get(sitemap_url)
         xml = BeautifulSoup(sitemap_response, 'lxml-xml', from_encoding=response.info().get_param('charset'))
+        sse.publish({"message": "Sitemap found", "path": sitemap_url }, type="sitemap")
         return xml
         sitemap_exists = 1
     except Exception as e:
         sitemap_exists = 0
         pass
+    sse.publish({"message": "Sitemap not found", "path": "Sitemap not found"}, type="sitemap")
     return "Sitemap not found"
