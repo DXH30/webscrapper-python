@@ -1,0 +1,46 @@
+h1 {
+    color: black;
+}
+
+body {
+    background: #efefef;
+    align: center;
+}
+
+.content {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+    text-align: center;
+}
+
+.feature {
+    text-align: left;
+    margin: auto;
+    width: 50%;
+}
+
+.btn {
+    background: #ffbc4a;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 1px;
+    font-weight: bold;
+    border: none;
+}
+
+.audit-input {
+    height: 30px;
+}
+
+.audit-form {
+    align: center;
+    width: 100%;
+    text-align: center;
+}
+
+.audit-group {
+    background: #fff;
+    padding: 10px;
+    width: auto;
+}

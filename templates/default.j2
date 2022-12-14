@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <div class="content">
+        <h1>SEO Audit Tool</h1>
+        <p>Enter an URL address and get a Free Website Analysis!</p>
+        <form action="/analyze" method="post" class="audit-form">
+            <div class="audit-group">
+                <input type="text" name="site_url" placeholder="Example.com" class="audit-input" />
+                <input type="button" value="AUDIT" class="btn" />
+            </div>
+        </form>
+        <div class="feature">
+            <ul>
+                <li>Word count <span id="word_count">___</span>_</li>
+                <li>Page title <span id="page_title">___</span></li>
+                <li>Meta description <span id="meta_description">___</span></li>
+                <li>Keywords on-page <span id="keywords_on_page">___</span></li>
+                <li>Number of Internal links <span id="number_of_internal_links">___</span></li>
+                <li>Number of External links <span id="number_of_external_links">___</span></li>
+                <li>Number of Broken links <span id="number_of_broken_links">___</span></li>
+                <li>Sitemap <span id="sitemap">___</span></li>
+            </ul>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.2.min.js" integrity="sha256-2krYZKh//PcchRtd+H+VyyQoZ/e3EcrkxhM8ycwASPA=" crossorigin="anonymous"></script>
+    <script>
+        $('.audit-form').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "/analyze",
+                type: "post",
+                data: $('.audit-form').serialize()
+            });
+
+            $.ajax({
+                url: "/brokenlink",
+                type: "get",
+                data: $('.audit-form').serialize()
+            });
+        });
+        var source = new EventSource("{{ streamlink }}");
+        source.addEventListener('progress', function(event) {
+
+                }, false);
+
+        var dataa;
+        source.addEventListener('status', function(event) {
+                    var status = JSON.parse(event.data);
+                    document.getElementById('word_count').innerText = status.word_count;
+                    document.getElementById('page_title').innerText = status.page_title;
+                    document.getElementById('meta_description').innerText = status.meta_description;
+                    document.getElementById('keywords_on_page').innerText = status.keywords_on_page;
+                    document.getElementById('number_of_internal_links').innerText = status.number_of_internal_links;
+                    document.getElementById('number_of_external_links').innerText = status.number_of_external_links;
+                    document.getElementById('number_of_broken_links').innerText = status.number_of_broken_links;
+                    document.getElementById('sitemap').innerText = status.sitemap;
+                }, false);
+    </script>
+</body>
+</html>

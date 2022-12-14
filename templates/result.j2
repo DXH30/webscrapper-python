@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    Word count: {{word_count}}<br /> 
+    Page title: {{page_title}}<br />
+    Meta description: {{meta_description}}<br />
+    Keywords on-page: {{keywords_on_page}}<br />
+    Number of Internal links: {{number_of_internal_links}}<br />
+    Number of External links: {{number_of_external_links}}<br />
+    Number of Broken links: {{number_of_broken_links}}<br />
+    Sitemap: {{sitemap}} <br />
+    <a href="{{previous_url}}">Back</a>
+            <script>
+                var source = new EventSource("{{ streamlink }}");
+                source.addEventListener('progress', function(event) {
+                    console.log(event.data);
+                }, false);
+            </script>
+</body>
+</html>
