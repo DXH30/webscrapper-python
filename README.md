@@ -23,4 +23,4 @@ Open url in browser
 http://127.0.0.1:5000
 ```
 # Screenshot
-[![Screenshot of scanning process](./screenshot.png)
+![Screenshot of scanning process](./screenshot.png)
