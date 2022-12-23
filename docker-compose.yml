@@ -1,0 +1,14 @@
+version: '2'
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: ./docker/flask/Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./src:/app
+    depends_on:
+      - redis
+  redis:
+    image: redis:latest
